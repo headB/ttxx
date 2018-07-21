@@ -12,6 +12,8 @@
                 2. 所以呢,如果涉及到python的环境问题的话,应该是使用sys了,这个是关于python的环境变量的.
         2. 正确添加路径应该是sys.path追加.!sys.path.path..但是,天天新鲜里面居然是sys.path.insert,我看看是不是有这属性先.
             1. 原来,list的方法有insert和append两种属性,一个是前面添加,一个是后面添加.!其实,内置的属性都是比较通用的.
+            2. 不小心又学到新东西了.就是关于单个import和from xx import xx
+            的区别,这次算是弄得相对很明白了.!
     3. 然后使用命令python manage.py startapp user,goods,cart,order
     4. 相应的,在settings.py里面也添加相应的代码.在INSTALLED_APPS添加.
     5. 
