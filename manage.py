@@ -3,6 +3,8 @@ import os
 import sys
 
 if __name__ == "__main__":
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0,os.path.join(BASE_DIR,"apps"))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ttxx.settings")
     try:
         from django.core.management import execute_from_command_line

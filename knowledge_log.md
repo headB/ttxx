@@ -16,4 +16,6 @@
             的区别,这次算是弄得相对很明白了.!
     3. 然后使用命令python manage.py startapp user,goods,cart,order
     4. 相应的,在settings.py里面也添加相应的代码.在INSTALLED_APPS添加.
-    5. 
+    5. 同时,可以在settings.py文件里面,填写templates的DIRS位置了.
+    6. 同时把static文件夹写上也是可以的.
+    7. 然后配置填写在项目目录里面的urls的文件.加入路径可以访问到上面创建的4个apps.
