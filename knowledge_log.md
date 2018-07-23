@@ -14,8 +14,25 @@
             1. 原来,list的方法有insert和append两种属性,一个是前面添加,一个是后面添加.!其实,内置的属性都是比较通用的.
             2. 不小心又学到新东西了.就是关于单个import和from xx import xx
             的区别,这次算是弄得相对很明白了.!
-    3. 然后使用命令python manage.py startapp user,goods,cart,order
-    4. 相应的,在settings.py里面也添加相应的代码.在INSTALLED_APPS添加.
-    5. 同时,可以在settings.py文件里面,填写templates的DIRS位置了.
-    6. 同时把static文件夹写上也是可以的.
-    7. 然后配置填写在项目目录里面的urls的文件.加入路径可以访问到上面创建的4个apps.
+4. 然后使用命令python manage.py startapp user,goods,cart,order
+5. 相应的,在settings.py里面也添加相应的代码.在INSTALLED_APPS添加.
+6. 同时,可以在settings.py文件里面,填写templates的DIRS位置了.
+7. 同时把static文件夹写上也是可以的.
+8. 然后配置填写在项目目录里面的urls的文件.加入路径可以访问到上面创建的4个apps.
+9. 在所有的app里面分别设置好URL的namespace，命名空间。！
+10. 创建db包，然后写一个BaseModel模块
+    1. 定义好了以后，再定义一下元类，添加说明为"抽象基本类"
+11. 然后分别去定义user，order等4个app下面的model
+    1. 记得每一个模型类，都得定义一下db_table
+    2. 然后定义在Meta下面的verbose_name_plural = verbose_name感觉作用是数据库显示。
+    3. 注意了，django高版本之后，设置外键约束的时候，注意需要添加当on_delete的情况。详细可以参考mysql的外键约束。on_delete=models.CASCADE
+12. 安装第三方插件，富文本编辑器
+    1. pip install django-tinymce==2.6.0
+    2. 安装好插件之后，在settings里面加入。在具体的INSTALLED_APPS加入tinymce.
+
+13. 然后现在迁移之前，需要在settings里面设置一个变量，AUTH_USER_MDEL = 'user.User',django认证系统使用的模型类。
+    1. 有什么作用。
+        1. 让django不在生成auth_user表。
+
+14. 框架基本上已经搭建完成了。！
+

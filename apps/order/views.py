@@ -1,7 +1,8 @@
-from django.shortcuts import render,HttpResponse,reverse
+from django.shortcuts import render,HttpResponse
+from django.urls import reverse
 
 # Create your views here.
 
 def index(request):
 
-    return HttpResponse(reverse('index'))
+    return HttpResponse(reverse('order:index'))
