@@ -5,4 +5,4 @@ from django.urls import reverse
 
 def index(request):
 
-    return HttpResponse(reverse('order:index'))
+    return render(request,'index.html')

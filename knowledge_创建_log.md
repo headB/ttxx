@@ -41,3 +41,5 @@
     2. 解决方法很简单,直接手动生成上面说的文件夹和文件就可以了.
     3. 或者使用命令python manage.py makemigations appxxxx,这样就可以单独修复app了,然后每个都是这样修复,
     4. 然后到了最后,使用python mange.py migrate一次性迁移就可以了.!!
+16. 可以使用命令python manage.py sqlmigrate user 0001_initial去检查迁移文件是否正确。！
+17. 创建过程观察了创建表的具体sql命令，然后还有了解了一下django对外键的字段的名字创建做了比较有技巧性，并不是直接创建字段的名字的，详细的可以参考7月份的有道笔记，7.24关于关键的这部分。2017年啊～。
