@@ -1,7 +1,9 @@
 from django.shortcuts import render,HttpResponse,redirect,reverse
 import re
 from .models import User
-from django.views.generic import TemplateView
+from django.views.generic import View
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from ttxx import settings
 # Create your views here.
 def index(reuqest):
 
@@ -58,18 +60,48 @@ def register_handle(request):
     user.is_active = 0
     user.save()
 
+    ##然后需要给用户发送验证邮件.!
+    #加密用户的身份信息,生成激活的token.
+    serializer = Serializer(settings.SECRET_KEY,600)
+    info = {'confirm':user.id}
+    token = serializer.dumps(info)
+    #发送邮件
+
+    from django.core.mail import send_mail
+
+    send_mail("你好吗?","this is real to me?%s"%token,'lizhixuan@wolfcode.cn',['lizhixuan@wolfcode.cn'])
+
     #返回应答,跳转傲首页
     return redirect(reverse("goods:index"))
 
 
-class RegisterView(TemplateView):
+class RegisterView(View):
     '''注册类'''
     def get(self,request):
-
-        TemplateView.as_view()
         
         return render(request,'register.html')
 
     def post(self,request):
 
         return register_handle(request)
+
+
+class ActiveView(View):
+
+    def get(self,reuqest,token):
+
+        token = Serializer(settings.SECRET_KEY,600)
+
+        try:
+            user_info = token.loads(token)
+            user_id = user_info['confirm']
+            user = User.obejects.get(id=user_id)
+            user.is_active = True
+            user.save()
+
+            #然后跳转登录页面
+            return render(request,'login.html')
+
+        except SignatureExpired as e:
+            #激活码已经过期
+            return HttpResponse("激活码已经过期!")

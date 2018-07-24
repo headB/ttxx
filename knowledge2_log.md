@@ -28,4 +28,14 @@
 
     - 总结
         1. 自己感觉就是,强制需要你去定制get,和post方法.
-12. 
+        2. 自己稍微去理解一下关于视图类的as_view的流程.
+12. 发送邮件验证用户注册信息
+    - 使用itsdangerous,生动定时的token,可以在指定的时间解密.
+13. 重新认识了新式的path的使用方法.!
+    - path('xxx/<str:token>'),然后在view方便,重新写一个参数接收,写一样,def (request,token)
+14. 然后,get或者post的判断流程里面,使用except挺好的,简便.例如这个.
+    ```python
+
+    
+
+    ```

@@ -32,6 +32,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = False
+EMAIL_HOST = 'smtp.ym.163.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'lizhixuan@wolfcode.cn'
+EMAIL_HOST_PASSWORD = 'lizhixuan123'
+DEFAULT_FROM_EMAIL = 'lizhixuan@wolfcode.cn'
+
 
 # Application definition
 
