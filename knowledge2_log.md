@@ -1,4 +1,5 @@
 # 用户注册模块
+
 1. 在user的view开始写方法。register方法，去渲染注册页面。
 2. 然后在user下面的urls添加对register的路由支持。
 3. 然后去templates里面的register，修改静态文件的读取方式。
@@ -6,4 +7,25 @@
     2. 然后载入静态资源的写法是 {% static 'css/xxx.css' %}  
 4. 修改/templates/register.html里面的form提交地址.
 5. 在form表单下面添加{%csrf_token%}防护.
-6. 
+6. 今天了解和很多关于django2.0的知识点.
+    - 命名空间有两种
+        1. 实例命名空间
+        2. 应用命名空间(最先搜索的,优先的)
+7. 对应上面的,方向域名解释的问题,分两种
+    1. 如果是在视图里面的,优先是从实例命名空间搜索,然后才到应用命名空间.
+    2. 如果是在模板里面的话,就是优先当前的作用域.具体可以看这个.
+    https://www.jianshu.com/p/404500a0408a
+8. 还有了解到了,如果有 all 函数这个东东的存在.
+9. 差点就搞错了auto_now_add和auto_now这两个字段工具.
+10. 顺便了解到了,原来select * from xx \G的用法.和show slave这个超级相似.!有点像格式化输出一样.!
+11. ## 类视图
+    - 什么是类视图?
+        1. Django 提供基本的视图类，它们适用于绝大多数的应用。所有的视图类继承自View 类，它负责将视图连接到URL、HTTP 方法调度和其它简单的功能。RedirectView 用于简单的HTTP 重定向，TemplateView 扩展基类来渲染模板。
+        参考网址:https://blog.csdn.net/list_lee/article/details/51220096
+    - 用法
+        1. from django.views.generic import View
+        2. 然后定义一个类继承与上面就可以了.
+
+    - 总结
+        1. 自己感觉就是,强制需要你去定制get,和post方法.
+12. 

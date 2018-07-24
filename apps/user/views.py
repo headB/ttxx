@@ -1,16 +1,21 @@
 from django.shortcuts import render,HttpResponse,redirect,reverse
 import re
 from .models import User
+from django.views.generic import TemplateView
 # Create your views here.
 def index(reuqest):
 
     return HttpResponse("this is user!")
 
 def register(request):
-
-    return render(request,'register.html')
+    if request.method == 'GET':
+        return render(request,'register.html')
+    else:
+        #进行注册处理
+        return register_handle(request)
 
 def register_handle(request):
+
     #进行注册处理
     #接收数据,
     username = request.POST.get('user_name')
@@ -57,4 +62,14 @@ def register_handle(request):
     return redirect(reverse("goods:index"))
 
 
-    return HttpResponse("hello")
+class RegisterView(TemplateView):
+    '''注册类'''
+    def get(self,request):
+
+        TemplateView.as_view()
+        
+        return render(request,'register.html')
+
+    def post(self,request):
+
+        return register_handle(request)
