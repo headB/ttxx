@@ -63,3 +63,4 @@
         3. 然后定义任务函数,例如是register_send_email
         4. 然后用装饰器@app.task装饰上面的函数.
         5. 然后项目代码调用这边函数 记得是 xxx.delay(xxxx)
+19. 晕.django2和1还是有区别的...账号认证authenxxx还是不一样,is_active的作用不一样!.

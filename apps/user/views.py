@@ -75,8 +75,8 @@ def register_handle(request):
     html_messages = "请点击这里完整用户激活!<a href=\"http://localhost:8000/user/active/%s\">点击我,点击我!take me!</a>"%token
 
     from django.core.mail import send_mail
-    # send_mail("你好吗?","",'lizhixuan@wolfcode.cn',[email,],html_message=html_messages,)
-    send_register_active_email.delay(email,username,token)
+    send_mail("你好吗?","",'lizhixuan@wolfcode.cn',[email,],html_message=html_messages,)
+    #send_register_active_email.delay(email,username,token)
     #返回应答,跳转傲首页
     return redirect(reverse("user:index"))
 
@@ -144,31 +144,42 @@ class LoginView(View):
         if not all([username,password]):
             return render(request,'login.html',{'errmsg':'数据不完整'})
 
+        
+
         #检查账号密码是否正确
         from django.contrib.auth import authenticate,login
         user = authenticate(username=username,password=password)
-        if user is not None:
-            if user.is_active:
-                #用户已经激活
-                #记录登陆状态
 
-                response = redirect(reverse('goods:index')) ##实质是返回一个HTTPResponseDirect对象
+        #好像激活了才可以通过检验的.所以添加一个检测用户是否存在
+        user1 = User.objects.filter(username=username)
 
-                login(request,user)
+        if user1:
 
-                remember = request.POST.get('remember')
+            if user1.filter(is_active=True):
+        
+                if user is not None:
+                    #用户已经激活
+                    #记录登陆状态
+
+                    response = redirect(reverse('goods:index')) ##实质是返回一个HTTPResponseDirect对象
+
+                    login(request,user)
+
+                    remember = request.POST.get('remember')
+                    
+                    #判断是否需要记住用户名
+                    if remember == 'on':
+                        response.set_cookie('username',username,max_age=7*24)
+                    #
+                    #跳转到首页
+                    return response
+                    #return redirect(reverse("goods:index"))
                 
-                #判断是否需要记住用户名
-                if remember == 'on':
-                    response.set_cookie('username',username,max_age=7*24)
-                #
-                #跳转到首页
-                return response
-                #return redirect(reverse("goods:index"))
-               
+                else:
+                    return render(request,'login.html',{'errmsg':'账号或者密码错误!'})
             else:
-               return render(request,'login.html',{'errmsg':'账号未激活'})
+                return render(request,'login.html',{'errmsg':'账号未激活!!'})
         else:
-            return render(request,'login.html',{'errmsg':'账号或者密码错误!'})
+            return render(request,'login.html',{'errmsg':'账号不存在'})    
 
 
