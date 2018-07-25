@@ -78,7 +78,7 @@ def register_handle(request):
     # send_mail("你好吗?","",'lizhixuan@wolfcode.cn',[email,],html_message=html_messages,)
     send_register_active_email.delay(email,username,token)
     #返回应答,跳转傲首页
-    return redirect(reverse("goods:index"))
+    return redirect(reverse("user:index"))
 
 
 class RegisterView(View):
@@ -115,3 +115,40 @@ class ActiveView(View):
 
         except Exception as e:
             return HttpResponse("发生未知错误!")
+
+
+class LoginView(View):
+
+    #登陆
+    def get(self,request):
+        #显示登陆页面
+        return render(request,'login.html')
+
+    def post(self,request):
+        #进行登陆校验
+        #接收数据
+        username = request.POST.get('username')
+        password = request.POST.get('pwd')
+
+        print(username,password)
+        #校验合法性
+        if not all([username,password]):
+            return render(request,'login.html',{'errmsg':'数据不完整'})
+
+        #检查账号密码是否正确
+        from django.contrib.auth import authenticate,login
+        user = authenticate(username=username,password=password)
+        if user is not None:
+            if user.is_active:
+                #用户已经激活
+                #记录登陆状态
+                login(request,user)
+                #跳转到首页
+                return redirect(reverse("goods:index"))
+               
+            else:
+               return render(request,'login.html',{'errmsg':'账号未激活'})
+        else:
+            return render(request,'login.html',{'errmsg':'账号或者密码错误!'})
+
+
