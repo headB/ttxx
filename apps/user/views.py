@@ -122,7 +122,16 @@ class LoginView(View):
     #登陆
     def get(self,request):
         #显示登陆页面
-        return render(request,'login.html')
+
+        ##判断是否记住用户名
+        if 'username'  in request.COOKIES:
+            username = request.COOKIES.get('username')
+            checked = 'checked'
+        else:
+            username = ''
+            checked = ''
+
+        return render(request,'login.html',{'username':username,'checked':checked})
 
     def post(self,request):
         #进行登陆校验
@@ -142,9 +151,20 @@ class LoginView(View):
             if user.is_active:
                 #用户已经激活
                 #记录登陆状态
+
+                response = redirect(reverse('goods:index')) ##实质是返回一个HTTPResponseDirect对象
+
                 login(request,user)
+
+                remember = request.POST.get('remember')
+                
+                #判断是否需要记住用户名
+                if remember == 'on':
+                    response.set_cookie('username',username,max_age=7*24)
+                #
                 #跳转到首页
-                return redirect(reverse("goods:index"))
+                return response
+                #return redirect(reverse("goods:index"))
                
             else:
                return render(request,'login.html',{'errmsg':'账号未激活'})
