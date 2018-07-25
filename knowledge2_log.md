@@ -52,3 +52,14 @@
 15. 记得发送邮件内容的时候附送<a>标签.还有记得是
 16. 但是突然感觉到自己其实对try异常处理还是不是很熟悉.现在去恶补一下知识先.
 17. 对应上面的问题终于解决了,因为我没有导入这个错误的异常的类,导入就正常了. from itsdangerous import SignatureExpired
+18. 继续下一步,现在去看看异步发送邮件!.
+    - 需要注意的地方就是
+        1. 任务发出者(django项目代码)
+        2. 任务中间人(可以是redis或者rabbitMQ)
+        3. 任务处理者(处理者也需要任务的代码!),还有一个问题就是,严重依赖django的settings配置.不过,应该能单独配置吧?
+    - 使用步骤
+        1. 首先是在django里面单独新建一个包,然后新建task.py,,,,,from celery import Celery
+        2. 然后定义app = Celery('xxxxxxx)
+        3. 然后定义任务函数,例如是register_send_email
+        4. 然后用装饰器@app.task装饰上面的函数.
+        5. 然后项目代码调用这边函数 记得是 xxx.delay(xxxx)

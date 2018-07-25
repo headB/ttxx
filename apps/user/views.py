@@ -6,6 +6,9 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
 from ttxx import settings
 
+##导入发送邮件函数
+from celery_tasks.tasks import send_register_active_email
+
 # Create your views here.
 def index(reuqest):
 
@@ -72,13 +75,8 @@ def register_handle(request):
     html_messages = "请点击这里完整用户激活!<a href=\"http://localhost:8000/user/active/%s\">点击我,点击我!take me!</a>"%token
 
     from django.core.mail import send_mail
-    
-    try:
-        send_mail("你好吗?","",'lizhixuan@wolfcode.cn',[email,],html_message=html_messages,)
-    except Exception as e:
-     
-        return render(request,'register.html',{'errmsg':'发送邮件失败!%s'%e})
-
+    # send_mail("你好吗?","",'lizhixuan@wolfcode.cn',[email,],html_message=html_messages,)
+    send_register_active_email.delay(email,username,token)
     #返回应答,跳转傲首页
     return redirect(reverse("goods:index"))
 
