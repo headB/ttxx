@@ -3,7 +3,9 @@ import re
 from .models import User
 from django.views.generic import View
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from itsdangerous import SignatureExpired
 from ttxx import settings
+
 # Create your views here.
 def index(reuqest):
 
@@ -65,11 +67,17 @@ def register_handle(request):
     serializer = Serializer(settings.SECRET_KEY,600)
     info = {'confirm':user.id}
     token = serializer.dumps(info)
+    token = token.decode()
     #发送邮件
+    html_messages = "请点击这里完整用户激活!<a href=\"http://localhost:8000/user/active/%s\">点击我,点击我!take me!</a>"%token
 
     from django.core.mail import send_mail
-
-    send_mail("你好吗?","this is real to me?%s"%token,'lizhixuan@wolfcode.cn',['lizhixuan@wolfcode.cn'])
+    
+    try:
+        send_mail("你好吗?","",'lizhixuan@wolfcode.cn',[email,],html_message=html_messages,)
+    except Exception as e:
+     
+        return render(request,'register.html',{'errmsg':'发送邮件失败!%s'%e})
 
     #返回应答,跳转傲首页
     return redirect(reverse("goods:index"))
@@ -88,20 +96,24 @@ class RegisterView(View):
 
 class ActiveView(View):
 
-    def get(self,reuqest,token):
+    
 
-        token = Serializer(settings.SECRET_KEY,600)
+    def get(self,request,token):
 
+        serializer = Serializer(settings.SECRET_KEY,600) 
         try:
-            user_info = token.loads(token)
+            user_info = serializer.loads(token)
             user_id = user_info['confirm']
-            user = User.obejects.get(id=user_id)
+            user = User.objects.get(id=user_id)
             user.is_active = True
             user.save()
 
-            #然后跳转登录页面
+        #然后跳转登录页面
             return render(request,'login.html')
 
         except SignatureExpired as e:
-            #激活码已经过期
+            #激活码已经过期SignatureExpired
             return HttpResponse("激活码已经过期!")
+
+        except Exception as e:
+            return HttpResponse("发生未知错误!")

@@ -35,7 +35,20 @@
     - path('xxx/<str:token>'),然后在view方便,重新写一个参数接收,写一样,def (request,token)
 14. 然后,get或者post的判断流程里面,使用except挺好的,简便.例如这个.
     ```python
+    try:
+        user_info = token.loads(token)
+        user_id = user_info['confirm']
+        user = User.obejects.get(id=user_id)
+        user.is_active = True
+        user.save()
 
-    
+        #然后跳转登录页面
+        return render(request,'login.html')
 
+    except SignatureExpired as e:
+        #激活码已经过期
+        return HttpResponse("激活码已经过期!")
     ```
+15. 记得发送邮件内容的时候附送<a>标签.还有记得是
+16. 但是突然感觉到自己其实对try异常处理还是不是很熟悉.现在去恶补一下知识先.
+17. 对应上面的问题终于解决了,因为我没有导入这个错误的异常的类,导入就正常了. from itsdangerous import SignatureExpired
