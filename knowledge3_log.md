@@ -13,4 +13,13 @@
     3. 在用户校验过程中,可以手动获取url地址中的参数,next参数,然后里面可以request.GET.get('next',reverse('goods:index')),
     这样子的写法,大概是要说明,假如没有成功获取到next参数的话,就跳转首页.
 8. 因为set_cookie的问题引发了一波对request,response的问题头脑风暴,现在解决好了.多多百度或者谷歌其实都是可以的.!
-9. 
+9. 恶补了类方法的知识点了
+    1. 其实,使用装饰器,真的是对这个函数进行装饰,例如一下
+    ```python
+    @decorate_x
+    def test_func(cls,**kwargs)
+    #其实就是相当于
+    test_func = decorate_x(test_func)
+    ```
+10. 除了你给模板文件传递的模板之外,django框架会把request.user也传给模板文件,也就是,可以直接在模板里面使用user.
+    - 如果是还没有登录的话,django框架会传递一个anonymousUser.

@@ -18,14 +18,20 @@
 		<div class="header">
 			<div class="welcome fl">欢迎来到天天生鲜!</div>
 			<div class="fr">
-				<div class="login_info fl">
-					欢迎您：<em>张 山</em>
+				<div class="login_btn fl">
+					{%if user.is_authenticated%}
+					欢迎您：<em>{{user.username}}</em>
+					{%else%}
+					请
+					{%endif%}
 				</div>
+				{%if not user.is_authenticated%}
 				<div class="login_btn fl">
 					<a href="{%url 'user:index'%}">登录</a>
 					<span>|</span>
 					<a href="{%url 'user:register'%}">注册</a>
 				</div>
+				{%endif%}
 				<div class="user_link fl">
 					<span>|</span>
 					<a href="{%url 'user:info'%}">用户中心</a>

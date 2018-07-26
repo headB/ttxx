@@ -1,6 +1,6 @@
 from django.shortcuts import render,HttpResponse,redirect,reverse
 import re
-from .models import User
+from .models import User,Address
 from django.views.generic import View
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import SignatureExpired
@@ -195,18 +195,77 @@ class LoginView(View):
 
 class UserInfoView(LoginRequiredMixin,View):
     def get(self,request):
+
+        #获取用户个人信息
+
+        #获取用户浏览记录
+
+
         
         return render(request,'user_center_info.html',{'page':'user'})
 
 class UserOrderView(LoginRequiredMixin,View):
     def get(self,request):
+
+        #获取用户的订单信息
+
+
         
         return render(request,'user_center_order.html',{'page':'order'})
 
 class AddressView(LoginRequiredMixin,View):
     def get(self,request):
-        
-        return render(request,'user_center_site.html',{'page':'address'})
+
+        #获取用户的默认收货地址作为显示.
+
+        user = request.user
+        try:
+            address = Address.objects.get(user=user,is_default=True)
+        except Address.DoesNotExist:
+            address = None
+
+        return render(request,'user_center_site.html',{'page':'address','address':address})
+
+
+    def post(self,request):
+
+        #校验数据
+        receiver = request.POST.get("receiver")
+        addr = request.POST.get("addr")
+        zip_code = request.POST.get("zip_code")
+        phone = request.POST.get("phone")
+
+        if not all([receiver,addr,zip_code,phone],):
+            #return HttpResponse("数据不完整")
+            return render(request,'user_center_site.html',{'errmsg':'你的数据不完整!'})
+
+        if not  re.match("\d{3}\d{8}|\d{4}\{7,8}",phone):
+            
+            return render(request,'user_center_site.html',{'errmsg':'你的数据号码错误!!'})
+
+        #业务处理#地址添加
+        #如果不存在收货地址,就设置为默认地址,否则就只添加新地址.!
+        user = request.user
+        try:
+            address = Address.objects.get(user=user,is_default=True)
+        except Address.DoesNotExist:
+            address = None
+
+        if address:
+            is_default = False
+        else:
+            is_default = True
+
+        #添加地址
+        Address.objects.create(user=user,
+        receiver=receiver,
+        addr=addr,
+        zip_code=zip_code,
+        phone=phone,
+        is_default=is_default)
+
+        #返回订单,刷新地址
+        return redirect(reverse('user:address'))
 
 
 class LogoutView(LoginRequiredMixin,View):
@@ -216,3 +275,4 @@ class LogoutView(LoginRequiredMixin,View):
         logout(reuqest)
         return redirect(reverse('user:login'))
 
+  
