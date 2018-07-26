@@ -9,6 +9,10 @@ from ttxx import settings
 ##导入发送邮件函数
 from celery_tasks.tasks import send_register_active_email
 
+##导入登陆验证装饰器
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+
 # Create your views here.
 def index(reuqest):
 
@@ -139,7 +143,6 @@ class LoginView(View):
         username = request.POST.get('username')
         password = request.POST.get('pwd')
 
-        print(username,password)
         #校验合法性
         if not all([username,password]):
             return render(request,'login.html',{'errmsg':'数据不完整'})
@@ -161,9 +164,14 @@ class LoginView(View):
                     #用户已经激活
                     #记录登陆状态
 
-                    response = redirect(reverse('goods:index')) ##实质是返回一个HTTPResponseDirect对象
+                    #获取登陆后所要跳转的地址
+                    to_redirect_url = request.GET.get("next",reverse("goods:index"))
+
+                    response = redirect(to_redirect_url) ##实质是返回一个HTTPResponseDirect对象
 
                     login(request,user)
+
+                    
 
                     remember = request.POST.get('remember')
                     
@@ -182,4 +190,31 @@ class LoginView(View):
         else:
             return render(request,'login.html',{'errmsg':'账号不存在'})    
 
+
+
+class UserInfoView(View):
+    def get(self,request):
+        
+        return render(request,'user_center_info.html',{'page':'user'})
+
+class UserOrderView(View):
+    def get(self,request):
+        
+        return render(request,'user_center_order.html',{'page':'order'})
+
+class AddressView(View):
+    def get(self,request):
+        
+        return render(request,'user_center_site.html',{'page':'address'})
+
+
+
+
+
+class LogoutView(View):
+
+    def get(self,reuqest):
+
+        logout(reuqest)
+        return redirect(reverse('user:login'))
 
