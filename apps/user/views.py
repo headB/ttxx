@@ -13,6 +13,8 @@ from celery_tasks.tasks import send_register_active_email
 ##导入登陆验证装饰器
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
+from django_redis import get_redis_connection
+from goods.models import GoodsSKU
 
 # Create your views here.
 def index(reuqest):
@@ -197,12 +199,32 @@ class UserInfoView(LoginRequiredMixin,View):
     def get(self,request):
 
         #获取用户个人信息
+        user = request.user
+        address = Address.objects.get_default_address(user)
 
         #获取用户浏览记录
+        # from redis import StrictRedis
+        # sr = StrictRedis(host="127.0.0.1",db=3)
+        con = get_redis_connection('default')
+        history_key = 'history_%d'%user.id
+        #获取用户最新浏览的5个商品id
+        sku_ids = con.lrange(history_key,0,4)
 
+        goods_li = GoodsSKU.objects.filter(id__in=sku_ids)
 
+        # for a_id in sku_ids:
+        #     for goods in goods_li:
+        #         if a_id == goods_id:
+        #             goods_res.append(goods)
+
+        goods_li = []
+        for id in sku_ids:
+            goods = GoodsSKU.objects.filter(id=id)
+            goods_li.append(goods)
+
+        context = {'page':'user','address':address,'good_li':goods_li}
         
-        return render(request,'user_center_info.html',{'page':'user'})
+        return render(request,'user_center_info.html',{'page':'user','address':address,'context':context})
 
 class UserOrderView(LoginRequiredMixin,View):
     def get(self,request):
@@ -217,12 +239,15 @@ class AddressView(LoginRequiredMixin,View):
     def get(self,request):
 
         #获取用户的默认收货地址作为显示.
-
+        # print(type(request.user))
+        # print(request.user.username)
         user = request.user
-        try:
-            address = Address.objects.get(user=user,is_default=True)
-        except Address.DoesNotExist:
-            address = None
+        # try:
+        #     address = Address.objects.get(user=user,is_default=True)
+        # except Address.DoesNotExist:
+        #     address = None
+
+        address = Address.objects.get_default_address(user)
 
         return render(request,'user_center_site.html',{'page':'address','address':address})
 
@@ -239,18 +264,20 @@ class AddressView(LoginRequiredMixin,View):
             #return HttpResponse("数据不完整")
             return render(request,'user_center_site.html',{'errmsg':'你的数据不完整!'})
 
-        if not  re.match("\d{3}\d{8}|\d{4}\{7,8}",phone):
+        if not re.match(r'^1[3|4|5|7|8][0-9]{9}$',phone):
             
-            return render(request,'user_center_site.html',{'errmsg':'你的数据号码错误!!'})
+            return render(request,'user_center_site.html',{'errmsg':'你的手机号码错误!!'})
 
         #业务处理#地址添加
         #如果不存在收货地址,就设置为默认地址,否则就只添加新地址.!
         user = request.user
-        try:
-            address = Address.objects.get(user=user,is_default=True)
-        except Address.DoesNotExist:
-            address = None
-
+        # try:
+        #     address = Address.objects.get(user=user,is_default=True)
+        # except Address.DoesNotExist:
+        #     address = None
+        
+        address = Address.objects.get_default_address(user)
+        print(address)
         if address:
             is_default = False
         else:
