@@ -5,6 +5,12 @@ FastDFS 是用 c 语言编写的一款开源的分布式文件系统。FastDFS �
 FastDFS 架构包括 Tracker server 和 Storage server。客户端请求 Tracker server 进行文 件上传、下载，通过 Tracker server 调度最终由 Storage server 完成文件上传和下载。 
 Tracker server 作用是负载均衡和调度，通过 Tracker server 在文件上传时可以根据一些 策略找到 Storage server 提供文件上传服务。可以将 tracker 称为追踪服务器或调度服务 器。 
 Storage server 作用是文件存储，客户端上传的文件最终存储在 Storage 服务器上， Storageserver 没有实现自己的文件系统而是利用操作系统 的文件系统来管理文件。可以将 storage 称为存储服务器。 
+    - 原来,这个是一个淘宝的程序工程师开源的.!
+
+#### 特点
+1. 海量存储,存储容量扩展方便.
+2. 文件内容重复.
+
 
 服务端两个角色: 
 Tracker:管理集群，tracker 也可以实现集群。每个 tracker 节点地位平等。收集 Storage 集群的状态。 
@@ -21,7 +27,14 @@ Storage:实际保存文件 Storage 分为多个组，每个组之间保存的文
 文件名:与文件上传时不同。是由存储服务器根据特定信息生成，文件名包含:源存储 服务器 IP 地址、文件创建时间戳、文件大小、随机数和文件拓展名等信息。 
 3. 文件下载流程
 
+####这个是github上面的安装方法.!
+https://github.com/happyfish100/fastdfs/wiki
+
+
 4. 简易FastDFS架构
+    - Linux系统下，FastDFS安装配置
+        发布时间：2018-01-19
+        https://www.aliyun.com/jiaocheng/124867.html?spm=5176.100033.2.14.pKaSO8
 
 5.  FastDFS安装
     - 安装fastdfs依赖包
@@ -29,6 +42,45 @@ Storage:实际保存文件 Storage 分为多个组，每个组之间保存的文
     2. 进入到libfastcommon-master的目录中
     3. 执行 ./make.sh
     4. 执行 sudo ./make.sh install
+    - 另外一种安装方法
+        1. 下载安装libfastcommon
+        git clone https://github.com/happyfish100/libfastcommon.git
+        cd libfastcommon/
+        ./make.sh
+        ./make.sh install
+    - 下载安装fastdfs
+        wget https://github.com/happyfish100/fastdfs/archive/V5.05.tar.gz
+        tar -zxvf V5.05.tar.gzcd V5.05
+        ./make.sh
+        ./make.sh install
+        执行安装后,默认会安装到/usr/bin中,并在/etc/fdfs中添加三个配置文件
+
+    - 修改配置文件
+
+    将/etc/fdfs中三个文件的名字去掉sample.
+    1. tracker.conf 中修改:base_path=/usr/lgip_fastdfs/fastdfs-tracker-log #用于存放日志
+    2. storage.conf 中修改:base_path=/usr/lgip_fastdfs/fastdfs-storage-log #用于存放日志
+        store_path0=/usr/lgip_fastdfs/fastdfs-file-save #存放数据
+        tracker_server=192.168.20.35:22122 #指定tracker服务器地址
+    3. client.conf 中同样要修改:base_path=/usr/lgip_fastdfs/fastdfs-client-log #用于存放日志。
+        tracker_server=192.168.20.35:22122 #指定tracker服务器地址
+        注:以上的base_path、store_path0的路径均需要进行手动创建。
+    - 启动tracker和storage
+        1. /usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf 
+        2. /usr/bin/fdfs_storaged /etc/fdfs/storage.conf 
+
+    - 重启tracker和storage
+        1. /usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf restart
+        2. /usr/bin/fdfs_storaged /etc/fdfs/storage.conf restart
+    
+    - 停止tracker和storage
+        1. /usr/bin/fdfs_trackerd /etc/fdfs/tracker.conf stop
+        2. /usr/bin/fdfs_storaged /etc/fdfs/storage.conf stop
+
+    - 启动成功,测试服务是否正常运行
+        1. 上传:/usr/bin/fdfs_upload_file /etc/fdfs/client.conf /usr/01.jpg
+        2. 下载:/usr/bin/fdfs_download_file /etc/fdfs/client.conf group1/M00/00/00/eSosZVfrMy2ADEcxAADS9IecoKQ527.jpg /usr/02.jpg
+        3. 删除:/usr/bin/fdfs_delete_file /etc/fdfs/client.conf group1/M00/00/00/eSosZVfrLr6AfbmDAADS9IecoKQ093.jpg
 
     - 5.2 安装fastdfs
     1. 解压缩fastdfs-master.zip
@@ -106,7 +158,7 @@ Storage:实际保存文件 Storage 分为多个组，每个组之间保存的文
         2. 进入fdfs_client-py-master.zip所在目录
         3. pip install fdfs_client-py-master.zip
         4. 
-
+    ```python
     >>> from fdfs_client.client import Fdfs_client
     >>> client = Fdfs_client('/etc/fdfs/client.conf')
     >>> ret = client.upload_by_filename('test')
@@ -114,5 +166,5 @@ Storage:实际保存文件 Storage 分为多个组，每个组之间保存的文
     {'Group name':'group1','Status':'Upload successed.', 'Remote file_id':'group1/M00/00/00/
         wKjzh0_xaR63RExnAAAaDqbNk5E1398.py','Uploaded size':'6.0KB','Local file name':'test'
         , 'Storage IP':'192.168.243.133'}
-
+    ```
     文档 https://github.com/jefforeilly/fdfs_client-py
