@@ -1,6 +1,6 @@
 # 分布式图片服务器FastDFS
 
-1. 什么是FastDFS
+1. #### 什么是FastDFS
 FastDFS 是用 c 语言编写的一款开源的分布式文件系统。FastDFS 为互联网量身定制， 充分考虑了冗余备份、负载均衡、线性扩容等机制，并注重高可用、高性能等指标，使用 FastDFS 很容易搭建一套高性能的文件服务器集群提供文件上传、下载等服务。 
 FastDFS 架构包括 Tracker server 和 Storage server。客户端请求 Tracker server 进行文 件上传、下载，通过 Tracker server 调度最终由 Storage server 完成文件上传和下载。 
 Tracker server 作用是负载均衡和调度，通过 Tracker server 在文件上传时可以根据一些 策略找到 Storage server 提供文件上传服务。可以将 tracker 称为追踪服务器或调度服务 器。 
@@ -27,16 +27,16 @@ Storage:实际保存文件 Storage 分为多个组，每个组之间保存的文
 文件名:与文件上传时不同。是由存储服务器根据特定信息生成，文件名包含:源存储 服务器 IP 地址、文件创建时间戳、文件大小、随机数和文件拓展名等信息。 
 3. 文件下载流程
 
-####这个是github上面的安装方法.!
+#### 这个是github上面的安装方法.!
 https://github.com/happyfish100/fastdfs/wiki
 
 
-4. 简易FastDFS架构
+4. #### 简易FastDFS架构
     - Linux系统下，FastDFS安装配置
         发布时间：2018-01-19
         https://www.aliyun.com/jiaocheng/124867.html?spm=5176.100033.2.14.pKaSO8
 
-5.  FastDFS安装
+5. #### FastDFS安装
     - 安装fastdfs依赖包
     1. 解压缩libfastcommon-master.zip
     2. 进入到libfastcommon-master的目录中
@@ -119,6 +119,7 @@ https://github.com/happyfish100/fastdfs/wiki
     fdfs_upload_file /etc/fdfs/client.conf 要上传的图片文件 
     如果返回类似group1/M00/00/00/rBIK6VcaP0aARXXvAAHrUgHEviQ394.jpg的文件id则说明文件上传成功
 
+    #### 配置nginx以及模块
     - 5.7 安装nginx及fastdfs-nginx-module web服务器 epoll
     1. 解压缩 nginx-1.8.1.tar.gz
     2. 解压缩 fastdfs-nginx-module-master.zip
@@ -168,3 +169,25 @@ https://github.com/happyfish100/fastdfs/wiki
         , 'Storage IP':'192.168.243.133'}
     ```
     文档 https://github.com/jefforeilly/fdfs_client-py
+
+6. ####
+
+
+
+nginx
+configure arguments: 
+--prefix=/usr/share/nginx 
+--sbin-path=/usr/sbin/nginx 
+--modules-path=/usr/lib64/nginx/modules 
+--conf-path=/etc/nginx/nginx.conf 
+--error-log-path=/var/log/nginx/error.log 
+--http-log-path=/var/log/nginx/access.log 
+--http-client-body-temp-path=/var/lib/nginx/tmp/client_body 
+--http-proxy-temp-path=/var/lib/nginx/tmp/proxy 
+--http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi 
+--http-uwsgi-temp-path=/var/lib/nginx/tmp/uwsgi 
+--http-scgi-temp-path=/var/lib/nginx/tmp/scgi 
+--pid-path=/var/run/nginx.pid 
+--lock-path=/var/lock/subsys/nginx 
+--user=nginx --group=nginx 
+--with-file-aio --with-ipv6 --with-http_ssl_module --with-http_v2_module --with-http_realip_module --with-http_addition_module --with-http_xslt_module=dynamic --with-http_image_filter_module=dynamic --with-http_geoip_module=dynamic --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_degradation_module --with-http_slice_module --with-http_stub_status_module --with-http_perl_module=dynamic --with-mail=dynamic --with-mail_ssl_module --with-pcre --with-pcre-jit --with-stream=dynamic --with-stream_ssl_module --with-debug --with-cc-opt='-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4 -m64 -mtune=generic' --with-ld-opt=' -Wl,-E'
