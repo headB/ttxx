@@ -171,3 +171,9 @@ LOGIN_URL='/user/login'
 
 #设置django文件存储类
 DEFAULT_FILE_STORAGE='utils.fdfs.storage.FDFSStorage'
+
+#设置fdfs使用
+FDFS_CLIENT_CONF = './utils/fdfs/client.conf'
+
+#设置fast dfs存储服务器上的ningx的IP和端口号
+FDFS_URL = "http://172.17.0.2:8888/"

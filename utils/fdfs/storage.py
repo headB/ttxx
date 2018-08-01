@@ -1,10 +1,23 @@
 from django.core.files.storage import Storage
 from fdfs_client.client import Fdfs_client
+from django.conf import settings
 
 #尝试改写django的存储类
 #其实,我自己想基本的存储类的模式是什么都不知道.哈哈哈.
 class FDFSStorage(Storage):
+
     '''fast dfs文件存储类'''
+
+    def __init__(self,client_conf=None,base_url=None):
+        '''初始化'''
+        if client_conf is None:
+            client_conf = settings.FDFS_CLIENT_CONF
+
+        self.client_conf = client_conf
+
+        if base_url is None:
+            base_url = settings.FDFS_URL
+            self.base_url = base_url
 
     def _open(self,name,model='rb'):
         pass
@@ -14,7 +27,7 @@ class FDFSStorage(Storage):
         #content包含你上传到fdfs
         #name上传时候的名字
         #创建一个file类型对象
-        client = Fdfs_client('/etc/fdfs/client.conf')
+        client = Fdfs_client(self.client_conf)
         #上传到fdfs系统中
         res = client.upload_by_buffer(content.read())
 
@@ -33,7 +46,7 @@ class FDFSStorage(Storage):
 
     def url(self,name):
         '''django返回访问文件的路径'''
-        return "http://172.17.0.2:8888/"+name
+        return self.base_url+name
 
 
 
