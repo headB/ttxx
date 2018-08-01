@@ -25,3 +25,18 @@ class FDFSStorage(Storage):
         filename = res.get('Remote file_id')
 
         return filename
+
+    def exists(self,name):
+        '''判断文件是否可用'''
+        return False
+        #代表文件可用!
+
+    def url(self,name):
+        '''django返回访问文件的路径'''
+        return "http://172.17.0.2:8888/"+name
+
+
+
+
+
+        
