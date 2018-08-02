@@ -1,0 +1,36 @@
+#### 首页页面的静态化
+1. celery(多进程?)
+2. 什么时候首页需要重新生成?
+    1. 当管理员后台修改首页信息对应的表格中的数据的时候,需要重新生成首页的静态页.
+3. 获取信息
+    1. 获取商品的种类信息
+    2. 获取首页的促销活动信息
+    3. 获取首页分类商品的展示信息
+        1. 获取type种类首页分类商品的图片展示信息
+        2. 获取type种类首页分类商品的文字展示信息
+        3. 动态给type增加属性,分别保存首页分类商品的图片展示信息和文字展示信息
+    4. 获取用户购物车中商品的数目(仅限首页的话,不需要这一部分!)
+    5. 代码步骤(使用模板)
+        - Django RequestContext用法
+        1. 加载模板文件,返回模板对象
+            ```python
+            temp = load.get_template()
+            ```
+        2. 定义模板上下文
+            ```python
+            context = RequestContext(request,context)
+            ```
+        3. 模板渲染
+            ```python
+            static_index_html = temp.render(context)
+            ```
+        4. 定义save方法保存静态页面代码.
+    6. 使用app.task装饰.
+    7. 然后启动celery客户端,调用函数,然后生成静态html文件.
+4. 通过浏览器管理员修改首页数据表中的数据,
+    1. 通过点击修改,django就让celery重新生成静态页面.
+    2. 使用django的Admin类.!ModelAdmin有特殊方法.
+    3. 直接在goods的文件夹里面的admin写类.
+        ```python
+        class IndexPromotionxx(admin.ModelAdmin)
+        ```

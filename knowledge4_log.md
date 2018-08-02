@@ -202,3 +202,7 @@ https://github.com/happyfish100/fastdfs/wiki
 1. 在django里面写Storage的自雷,然后覆写方法.
 2. django里面的settings定义好各种全局变量.!
 3. 然后就差不多了.dfs
+    1. _open方法
+    2. _save方法
+    3. exist方法
+    4. url方法(返回url地址)
