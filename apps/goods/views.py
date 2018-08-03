@@ -52,7 +52,7 @@ class IndexView(View):
                        'promotion_banners': promotion_banners}
        
        #设置缓存
-            cache.set('index_page_data',context,3600)
+            cache.set('index_page_data',context,1)
 
         # 获取用户购物车中商品的数目
         user = request.user

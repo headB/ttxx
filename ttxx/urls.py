@@ -19,11 +19,11 @@ from apps.goods.views import index as goods_index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', goods_index,name='goods_index'),
+    #path('', goods_index,name='goods_index'),
     path('tinymce/',include('tinymce.urls')),
     path('order/',include('order.urls',namespace='order')),
     path('user/',include('user.urls',namespace='user')),
-    path('goods/',include('goods.urls',namespace='goods')),
+    path('',include('goods.urls',namespace='goods')),
     path('cart/',include('cart.urls',namespace='cart')),
 
 ]

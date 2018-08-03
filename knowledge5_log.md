@@ -55,3 +55,45 @@
     2. 页面的静态化.
 
 #### 商品详细信息的获取和显示
+
+- 英文解释
+    1. SPU = Standard Product Unit (标准产品单位)
+    2. SKU = stock keeping unit(库存量单位)
+
+1. 为了排除可以被静态化干扰,先设置最小的缓存时间,或者直接取消缓存.
+2. 然后分别去查询商品详情,还有评论,反正就是信息获取.!detail啊~
+    1. 商品种类 goodsType.objects.all()
+    2. 商品评论信息 OrderGoods.objects.all()
+        ```python
+        #注意这个位置,使用了exclude,就是排除这个选项的其他所有选项.
+        sku_orders = OrderGoods.objects.filter(sku=sku).exclude(comment='')
+        ```
+    3. 新品信息 GoodsSKU.objects.filter
+        ```python
+        #注意这个位置,符号-表示是降序,就是DESC的选项.切片的话,就是限定结果,limit
+        new_skus = GoodsSKU.objects.filter(type=sku.type).order_by('-create_time')[:2]
+        ```
+    4. 获取其他SPU,商品的其他规则 GoodsSKUll.objects.filter
+    5. 获取用户购物车商品的数量
+        1. 判断用户是否登录
+            1. 用户历史记录
+            2. xxxx
+    6. 在模板里面开始写模板变量,有一个地方值得注意,就是,例如,GoodsSKU里面的images字段是一个特殊的字段,里面包含有url地址,SKU.images.url,
+        1. 在model的写法是这样的,借助了外键.!
+            ```python
+            class GoodsSKU(BaseModel):
+                    goods = models.ForeignKey('Goods', verbose_name='商品SPU',on_delete=models.CASCADE)
+                    image = models.ImageField(upload_to='goods', verbose_name='商品图片')
+
+            ```
+            #自己感觉呢,就是,这里有一个外键关联,一对多的!.
+    7. 关于富文本编辑,一般的模板变量传递,都会自动转义的,所以你要关闭注意,具体用法是:
+        ```python
+        {%autoescape on%}
+        {% endautoescape %}
+        #或者,直接使用safe
+        {{ var|safe }} #取消转义
+        ```
+    8. 商品详情,是富文本,可以要转义,然后是评论时间也需要转义
+    9. 如果获得评论时间,也就是最后一次评论.直接获取updatetime.
+    
