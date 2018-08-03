@@ -25,13 +25,13 @@
 					请
 					{%endif%}
 				</div>
-				{%if not user.is_authenticated%}
+				
 				<div class="login_btn fl">
 					<a href="{%url 'user:index'%}">登录</a>
 					<span>|</span>
 					<a href="{%url 'user:register'%}">注册</a>
 				</div>
-				{%endif%}
+			
 				<div class="user_link fl">
 					<span>|</span>
 					<a href="{%url 'user:info'%}">用户中心</a>
@@ -56,7 +56,7 @@
 		</div>
 		<div class="guest_cart fr">
 			<a href="#" class="cart_name fl">我的购物车</a>
-			<div class="goods_count fl" id="show_count">1</div>
+			<div class="goods_count fl" id="show_count">{{ cart_count }}</div>
 		</div>
 	</div>
 	{%endblock search_bar%}

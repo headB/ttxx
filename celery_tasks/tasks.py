@@ -8,7 +8,7 @@ from django.template import loader,RequestContext
 from django_redis import get_redis_connection
 import os
  
-##这里位置的代码,如果是用celery来启动的时候,才取消注释
+#这里位置的代码,如果是用celery来启动的时候,才取消注释
 # import django
 # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ttxx.settings")
 # django.setup()
@@ -56,14 +56,15 @@ def generate_static_index_html():
     #组织上下文
     context = {'types': types,
                 'goods_banners': goods_banners,
-                'promotion_banners': promotion_banners}
+                'promotion_banners': promotion_banners,
+                "cart_count":0}
     
     #加载模板
     temp = loader.get_template('static_index.html')
     
     #模板渲染
     static_index_html = temp.render(context)
-
+    
     #定义模板模板上下文
     #第二步可以省略,可以不依赖request
     # context = RequestContext(request,context)
