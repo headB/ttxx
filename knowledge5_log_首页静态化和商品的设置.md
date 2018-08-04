@@ -97,10 +97,8 @@
     8. 商品详情,是富文本,可以要转义,然后是评论时间也需要转义
     9. 如果获得评论时间,也就是最后一次评论.直接获取updatetime.
     10. 获取评论用户,然后就是多层的外键递归.order.order.user.usnername
-    11. 
 
-
-#### 用户历史记录添加.
+#### 用户历史记录添加
 
 1. 首先,在首页的时候,每一个轮播的图片,现在在里面的url里面后面需要添加参数,才可以跳转到详细的商品信息页面.
     ```python
@@ -110,8 +108,38 @@
 2. 直接在Goods里面的view里面的detailView的用户判断之后,添加用户浏览记录,应该说,详细信息调用,就马上把浏览记录记录到数据中.意思是这样的,就是,如果浏览这个详情页的时候,这个用户没有登录,就不同记录了,其他都是相反的情况.!
     1. 用户添加浏览记录的时候,默认必须从左侧插入.
     2. 插入之前,先检查是否已经在旧的列表存在,存在的话,就先去除,然后再插入到最新.
+    3. 需要使用到函数,这个函数的特点就是,如果元素存在就删除,否则就不用删除了.里面参数的0,代表移除所有
+        ```python
+        if user.is_authenticated():
+                # 用户已登录
+                conn = get_redis_connection('default')
+                cart_key = 'cart_%d' % user.id
+                cart_count = conn.hlen(cart_key)
 
-#### 获取商品详情页面的SPU.
+                # 添加用户的历史记录
+                conn = get_redis_connection('default')
+                history_key = 'history_%d'%user.id
+                # 移除列表中的goods_id
+                conn.lrem(history_key, 0, goods_id)
+                # 把goods_id插入到列表的左侧
+                conn.lpush(history_key, goods_id)
+                # 只保存用户最新浏览的5条信息
+                conn.ltrim(history_key, 0, 4)
+
+                #r.lrem(name,value,num) 参数对应： name: redis的name
+                #value: 要删除的值
+                #num: num=0 删除列表中所有的指定值；
+                #num=2 从前到后，删除2个；
+                #num=-2 从后向前，删除2个
+
+        ```
+    4. 还有一个方法,redis的,LTRIM,对数据进行裁剪.
+        ```python
+            LTRIM key start stop
+            #只保留区间内的元素
+        ```
+
+#### 获取商品详情页面的SPU
 
 > 功能就类似浏览苹果手机,然后下面提供其他的颜色和型号
 1. 注意,去除当前的goods_id的SPU商品.
@@ -119,3 +147,79 @@
             same_spu_skus = GoodsSKU.objects.filter(goods=sku.goods).exclude(id=goods_id)
 
     ```
+
+#### 列表显示页面
+
+1. 先到static找到list.html,然后复制到templates下面,然后修改.
+    1. 将list.html整合一下变成通用模板.
+2. 然后,在view,定义listView,
+    1. 需要传递商品种类.
+    2. 需要传递页码,第几页
+    3. 然后就是,排序问题.排序的方式.
+    4. url的设计. /list/种类
+        1. 一般有多种,例如说这个,list?xx=xxx&xx=zz之类,但是django一般用list/xx/yy/dd这个更加方便.
+        2. 还有一种就是关于restFUL API,居然django这种是符合RESTFUL风格.!
+3. ListView的实现过程.
+    1. 首先查询这个种类id是否存在.获取种类信息
+    2. 然后查询商品分类信息.
+    3. ### 注意这个地方,这个查询的条件之前见过一次,的确比较诡异的,都是一个查询集来的.里面有信息啊~.一般应该是get吧,
+        只能是单个的结果吧?对,就是当个结果.!外键关键结果?我去看看model先.是的,看过了,就是整个goodtype当做是关联的对象,
+        不仅仅是当个字段名.!
+        ```python
+        type = GoodsType.objects.get(id=type_id)
+        skus = GoodsSKU.objects.filter(type=type).order_by('price')
+        ##然后从mysql创建表的结果来看,其实,也仅仅是关联了id而已.
+        `goods_id` int(11) NOT NULL,
+        `type_id` int(11) NOT NULL,
+        PRIMARY KEY (`id`),
+        KEY `df_goods_sku_goods_id_31622280_fk_df_goods_id` (`goods_id`),
+        KEY `df_goods_sku_type_id_576de3b4_fk_df_goods_type_id` (`type_id`),
+        CONSTRAINT `df_goods_sku_goods_id_31622280_fk_df_goods_id` FOREIGN KEY (`goods_id`) REFERENCES `df_goods` (`id`),
+        CONSTRAINT `df_goods_sku_type_id_576de3b4_fk_df_goods_type_id` FOREIGN KEY (`type_id`) REFERENCES `df_goods_type` (`id`)
+        ```
+        >然后,如果查询结果如何获得结果呢,获取是这样的.In [8]: goods_info[0].type.logo,Out[8]: 'sedfood',意思是,外键的名字然后对应外键表名字.
+        ```python
+        mysql> select * from df_goods_sku\G
+        *************************** 1. row ***************************
+        create_time: 2018-08-04 04:18:45.318601
+        update_time: 2018-08-04 04:18:45.318712
+                id: 1
+        is_delete: 0
+            name: 特种草莓
+            desc: 特种草莓
+            price: 10.00
+            unite: 盒
+            image: group1/M00/00/00/rBEAAltlKSWACaLJAADhpU9_Ylo3513545
+            stock: 100
+            sales: 10
+            status: 1
+        goods_id: 1
+            type_id: 2
+        1 row in set (0.00 sec)
+        ```
+        关于外键,可以参考一下这里.
+        Spanning multi-valued relationships
+        https://docs.djangoproject.com/en/2.0/topics/db/queries/
+
+        通过通过查询外键去获取值的几种方法.
+        https://www.cnblogs.com/zhaopengcheng/p/5608328.html?utm_source=tuicool&utm_medium=referral
+
+    4. 然后还有一个注意的地方,就是排序,使用的是xxx.order_by('+/-字段名字')好像默认只写字段名字的话,就是代表是升序了,就是+
+    5. 外键比喻.
+        ```python
+            province->city->
+            省---->城市
+            一对多关系
+            使用方法1: p.objects.get('xx')-->.citys_set.all()
+            多对一:
+            城市--->省:
+            使用方法:p.objects.get('yy')-->.province.name/id/code.....
+        ```
+    6. 多对多访问.(建立字段的时候是ManyToManyKey)
+        b = Book.objects.get(id=50)
+        b.authors.all()
+
+#### 分页的功能
+
+1. 分页需要借助,from django.core.paginator import Paginator
+    1. Paginator(查询集[反正可以遍历的东东],)

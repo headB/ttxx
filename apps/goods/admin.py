@@ -1,5 +1,5 @@
 from django.contrib import admin
-from goods.models import GoodsType,IndexPromotionBanner,IndexGoodsBanner,IndexTypeGoodsBanner
+from goods.models import Goods,GoodsSKU,GoodsType,IndexPromotionBanner,IndexGoodsBanner,IndexTypeGoodsBanner
 # Register your models here.
 ##导入类,用于一旦管理员操作了数据,就进行把数据更新
 from django.core.cache import cache
@@ -40,8 +40,20 @@ class IndexGoodsBannerAdmin(BaseModelAdmin):
 
 class IndexTypeGoodsBannerAdmin(BaseModelAdmin):
     pass
-    
 
+class GoodsAdmin(BaseModelAdmin):
+    pass
+
+class GoodsSKUAdmin(BaseModelAdmin):
+    pass
+
+
+
+
+
+
+admin.site.register(Goods,GoodsAdmin)
+admin.site.register(GoodsSKU,GoodsSKUAdmin)
 
 admin.site.register(IndexPromotionBanner,IndexPromotionBannerAdmin)
 admin.site.register(GoodsType,GoodsTypeAdmin)

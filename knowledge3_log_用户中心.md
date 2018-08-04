@@ -8,6 +8,7 @@
     1. 装饰器就是,先调用自己,然后里面包括了目标函数,然后添加自己的函数运行,可以在目标函数之前,或者之后.
     2. 所以就是应该在之前运行,检查.!
 7. 使用login_reqired,可以利用django自带的机制让没有登陆的用户,强制需要登陆后才可以继续有权限执行当前的操作.!
+    - ## 使用login_reqired
     1. 在settings里面设置就可以了.!设置变量, LOGIN_URL='/user/login'
     2. 注意了,里面会有一个地址跳转,格式是这样的.http://localhost:8000/user/login/?next=/user/user_info/
     3. 在用户校验过程中,可以手动获取url地址中的参数,next参数,然后里面可以request.GET.get('next',reverse('goods:index')),
@@ -23,5 +24,5 @@
     ```
 10. 除了你给模板文件传递的模板之外,django框架会把request.user也传给模板文件,也就是,可以直接在模板里面使用user.
     - 如果是还没有登录的话,django框架会传递一个anonymousUser.
-11. 模型管理器类方法封装.!
+11. ## 模型管理器类方法封装.!
     1. 自定义一个模型管理器对象

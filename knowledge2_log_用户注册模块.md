@@ -34,6 +34,7 @@
 13. 重新认识了新式的path的使用方法.!
     - path('xxx/<str:token>'),然后在view方便,重新写一个参数接收,写一样,def (request,token)
 14. 然后,get或者post的判断流程里面,使用except挺好的,简便.例如这个.
+    ## except异常的应用
     ```python
     try:
         user_info = token.loads(token)
