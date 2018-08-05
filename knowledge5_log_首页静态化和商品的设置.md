@@ -215,6 +215,26 @@
             城市--->省:
             使用方法:p.objects.get('yy')-->.province.name/id/code.....
         ```
+        1. 那么这里面pk和id有什么不同和相同之处呢？
+            http://zhangfortune.iteye.com/blog/2124979
+            但是有时候不一样？什么时候？是的，你猜到了，当model的主键不是id的时候，这种情况虽然少，但是django为我们想到了，我们来看一下
+        2. Django objects.all()、objects.get()与objects.filter()之间的区别介绍
+            1. filer若是查询不到数据，会返回一个空的查询集，[]  type类型是：Queryset。查询到多余一条的时候会返回一个包含多个对象的查询集。
+                filter和get类似，但支持更强大的查询功能
+            2. all返回的是QuerySet对象，程序并没有真的在数据库中执行SQL语句查询数据，但支持迭代，使用for循环可以获取数据。
+            3. get返回的是Model对象，类型为列表，说明使用get方法会直接执行sql语句获取数据
+        3. ```python
+                #一种创建对象并将其全部保存在一个步骤中的便捷方法。从而：
+                p = Person.objects.create(first_name="Bruce", last_name="Springsteen")
+                #和：
+                p = Person(first_name="Bruce", last_name="Springsteen")
+                p.save(force_insert=True)
+                是等价的。
+            ```
+        4. django官方文档
+            - QuerySets很懒,意思是,这个行为,只进行一次数据库查询,使用filter多次查询都只是一次数据库查询.!
+            - evaluated的意思是,[数学、逻辑学]求…的数值
+        
     6. 多对多访问.(建立字段的时候是ManyToManyKey)
         b = Book.objects.get(id=50)
         b.authors.all()
