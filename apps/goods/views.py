@@ -214,6 +214,7 @@ class ListView(View):
                    'skus_page':skus_page,
                    'new_skus':new_skus,
                    'pages':page_range,
+                   'end_page':paginator.num_pages,
                    'cart_count':cart_count,
                    'sort':sort}
 
