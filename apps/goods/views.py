@@ -186,8 +186,10 @@ class ListView(View):
     
         # if paginator.num_pages <=5:
         #     page_range = range(1,paginator.num_pages)
-        if page <= 3:
-            page_range = range(1,paginator.num_pages)
+        if paginator.num_pages <= 5:
+            page_range = range(1,paginator.num_pages+1)
+        elif page <= 3:
+            page_range = range(1,6)
         elif paginator.num_pages - page <=2:
             page_range = range(paginator.num_pages-4,paginator.num_pages+1)
         else:
