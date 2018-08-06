@@ -1,4 +1,4 @@
-#### 首页页面的静态化
+# 首页页面的静态化
 1. celery(多进程?)
 2. 什么时候首页需要重新生成?
     1. 当管理员后台修改首页信息对应的表格中的数据的时候,需要重新生成首页的静态页.
@@ -54,7 +54,7 @@
     一定程度可以防止而已的攻击.
     2. 页面的静态化.
 
-#### 商品详细信息的获取和显示
+# 商品详细信息的获取和显示
 
 - 英文解释
     1. SPU = Standard Product Unit (标准产品单位)
@@ -98,7 +98,7 @@
     9. 如果获得评论时间,也就是最后一次评论.直接获取updatetime.
     10. 获取评论用户,然后就是多层的外键递归.order.order.user.usnername
 
-#### 用户历史记录添加
+# 用户历史记录添加
 
 1. 首先,在首页的时候,每一个轮播的图片,现在在里面的url里面后面需要添加参数,才可以跳转到详细的商品信息页面.
     ```python
@@ -139,7 +139,7 @@
             #只保留区间内的元素
         ```
 
-#### 获取商品详情页面的SPU
+# 获取商品详情页面的SPU
 
 > 功能就类似浏览苹果手机,然后下面提供其他的颜色和型号
 1. 注意,去除当前的goods_id的SPU商品.
@@ -148,7 +148,7 @@
 
     ```
 
-#### 列表显示页面
+# 列表显示页面
 
 1. 先到static找到list.html,然后复制到templates下面,然后修改.
     1. 将list.html整合一下变成通用模板.
@@ -238,8 +238,37 @@
     6. 多对多访问.(建立字段的时候是ManyToManyKey)
         b = Book.objects.get(id=50)
         b.authors.all()
+    7. ## filter过滤外键对象
+        对相关对象的查询¶
+        涉及相关对象的查询遵循与涉及正常值字段的查询相同的规则。指定要匹配的查询的值时，可以使用对象实例本身或对象的主键值。
 
-#### 分页的功能
+        举例来说，如果你有一个博客的对象b有id=5，以下三种查询是相同的：
+        ```python
+        Entry.objects.filter(blog=b) # Query using object instance
+        Entry.objects.filter(blog=b.id) # Query using id from instance
+        Entry.objects.filter(blog=5) # Query using id directly
+        ```
+    8. ## 直接打印对象的字段,就可以看到这个属性的所有值了.!
+        1. 或者,使用filter查询完了以后调用values()方法,也是可以打印出结果的.!
+
+
+
+# 分页的功能
 
 1. 分页需要借助,from django.core.paginator import Paginator
-    1. Paginator(查询集[反正可以遍历的东东],)
+    1. Paginator(查询集[反正可以遍历的东东],多少页)
+2. 然后到新品信息.看看要怎么处理
+    1. 没怎么处理,就是设置好detail就差不多了.稍后补充.
+3. 分页.
+    1. 遍历page对象,例如这个 for sku in skus_page.object_list,可以简写为for x in skus_page:
+4. ### 注意了,变量名,{% xx %} 符号{和符号%是紧贴的!.注意了.
+5. 判断好上一页,下一页,然后是当前页,也就差不多了.!
+
+
+## 关于排序
+1. 好像并还不是很熟悉,不过其实排序就是直接对xx.objects.all().order_by()或者是objects.filter().order_by()
+    ```python
+        In [2]: x1 = models.GoodsSKU.objects.all().order_by('id')
+        In [3]: x1
+        Out[3]: <QuerySet [<GoodsSKU: GoodsSKU object (1)>]>
+    ```
