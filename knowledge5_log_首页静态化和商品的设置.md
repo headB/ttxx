@@ -263,7 +263,7 @@
     1. 遍历page对象,例如这个 for sku in skus_page.object_list,可以简写为for x in skus_page:
 4. ### 注意了,变量名,{% xx %} 符号{和符号%是紧贴的!.注意了.
 5. 判断好上一页,下一页,然后是当前页,也就差不多了.!
-
+6. 新的需求是,只显示前两页和后两页,中间不见了.!
 
 ## 关于排序
 1. 好像并还不是很熟悉,不过其实排序就是直接对xx.objects.all().order_by()或者是objects.filter().order_by()
