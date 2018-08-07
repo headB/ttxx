@@ -183,7 +183,7 @@ FDFS_URL = "http://172.17.0.2:8888/"
 HAYSTACK_CONNECTIONS = {
                 'default':{
 
-                    'ENGINE':'haystack.backends.whoosh_backend.WhooshEngine',
+                    'ENGINE':'haystack.backends.whoosh_cn_backend.WhooshEngine',
                     'PATH':os.path.join(BASE_DIR,'whoosh_index'),
                 }
             }

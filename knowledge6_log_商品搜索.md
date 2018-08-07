@@ -87,4 +87,14 @@
         res = jieba.cut(str1,cut_all=True)
         res
     ```
+2. 需要去到python的模块安装目录.找到backend.
+    1. 第一个是增加一个文件,ChineseAnalyzer.py
+    2. 第二个是复制并且重命名一个文件,whoosh_backend重命名未whoosh_cn_backend.py
+
+3. 然后修改配置文件,settings.py
+    1. 修改之前定义的haystack_connections的配置,更改为xxxx.whoosh_cn_backend.xxx
+
+4. 然后使用命令重新python manage.py rebuild_index
+
+5. 完结.
 
