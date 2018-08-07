@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #path('', goods_index,name='goods_index'),
     path('tinymce/',include('tinymce.urls')),
+    path('search/',include('haystack.urls')), #全文检索框架
     path('order/',include('order.urls',namespace='order')),
     path('user/',include('user.urls',namespace='user')),
     path('',include('goods.urls',namespace='goods')),

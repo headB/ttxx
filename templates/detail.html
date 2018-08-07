@@ -5,7 +5,7 @@
 	<div class="breadcrumb">
 		<a href="#">全部分类</a>
 		<span>></span>
-		<a href="#">{{ sku.type.name }}</a>
+		<a href="{% url 'goods:list' sku.id 1  %}">{{ sku.type.name }}</a>
 		<span>></span>
 		<a href="#">商品详情</a>
 	</div>
