@@ -53,7 +53,6 @@ class IndexView(View):
        
             #设置缓存
             cache.set('index_page_data',context,3600)
-
         # 获取用户购物车中商品的数目
         user = request.user
         cart_count = 0
