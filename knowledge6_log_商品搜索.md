@@ -79,3 +79,12 @@
 4. 然后自己创建一个模板在search文件夹下面,然后里面的模板变量什么的依照上面的变量就可以了.!
 
 
+# 使用jieba
+1. 实例
+    ```python
+        import jieba
+        str1 = '很不错的草莓'
+        res = jieba.cut(str1,cut_all=True)
+        res
+    ```
+
