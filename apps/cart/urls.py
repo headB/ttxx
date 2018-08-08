@@ -3,5 +3,7 @@ from . import views
 
 app_name = 'cart'
 urlpatterns=[
-    path('',views.index,name='index')
+    path('add',views.CartAddView.as_view(),name='add'),#购物车商品添加
+    path('',views.CartInfoView.as_view(),name='show'),#购物车页面显示
+
 ]
