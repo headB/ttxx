@@ -9,9 +9,9 @@ from django_redis import get_redis_connection
 import os
  
 #这里位置的代码,如果是用celery来启动的时候,才取消注释
-# import django
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ttxx.settings")
-# django.setup()
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ttxx.settings")
+django.setup()
 
 #这些包最好还是写在上面这三句代码的下面,不然的话初始化环境就是失败了!
 from goods.models import GoodsType, GoodsSKU, IndexGoodsBanner,IndexPromotionBanner,IndexTypeGoodsBanner

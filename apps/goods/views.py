@@ -101,7 +101,17 @@ class DetailView(View):
             # 用户已登录
             conn = get_redis_connection('default')
             cart_key = 'cart_%d' % user.id
-            cart_count = conn.hlen(cart_key)
+
+            keys = conn.hkeys(cart_key)
+
+            cart_count = 0
+        #当前用户总的商品数目
+
+            for x in keys:
+                x1 = int(conn.hget(cart_key,x))
+                cart_count += x1
+
+                #cart_count = conn.hlen(cart_key)
 
             # 添加用户的历史记录
             conn = get_redis_connection('default')

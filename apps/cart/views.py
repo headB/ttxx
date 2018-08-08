@@ -50,8 +50,8 @@ class CartAddView(View):
         cart_key = 'cart_%d'%user.id
 
         #尝试获取sku_id的值
-        cart_count = conn.hget(cart_key,sku_id)
-
+        cart_count = int(conn.hget(cart_key,sku_id))
+        print(cart_count)
         if cart_count:
             #如果存在就进行累加
             count += int(cart_count)
@@ -64,7 +64,17 @@ class CartAddView(View):
         conn.hset(cart_key,sku_id,count)
 
         #计算用户购物车商品的条目数
-        total_count = conn.hlen(cart_key)
+
+        keys = conn.hkeys(cart_key)
+
+        total_count = 0
+        #当前用户总的商品数目
+
+        for x in keys:
+            x1 = int(conn.hget(cart_key,x))
+            total_count += x1
+
+        #total_count = conn.hlen(cart_key)
 
         #返回应答
         return JsonResponse({'res':5,'message':'成功!','total_count':total_count})
@@ -84,6 +94,11 @@ class CartInfoView(LoginRequiredMixin,View):
 
         cart_dict = conn.hgetall(cart_key)
 
+
+        #保存用户的商品总数目和总价格.
+        skus = []
+        total_price = 0
+        total_count = 0
         #遍历获取商品的信息
 
         for sku_id,count in cart_dict.items():
@@ -91,5 +106,17 @@ class CartInfoView(LoginRequiredMixin,View):
             sku = GoodsSKU.objects.get(id=sku_id)
             #计算商品的小计
             amount = sku.price*int(count)
+            #给sku动态增加属性amount,保存商品小计
+            sku.amount = int(amount)
 
-        return render(request,'cart.html')
+            sku.count = int(count)
+
+            skus.append(sku)
+
+            total_price += int(amount)
+            total_count += int(count)
+        
+        #组织信息
+        context = {'total_price':total_price,'total_count':total_count,'skus':skus}
+
+        return render(request,'cart.html',context)
