@@ -61,7 +61,14 @@ class IndexView(View):
             conn = get_redis_connection('default')
             cart_key = 'cart_%d'%user.id
             #hlen是返回哈希的一个数目.!
-            cart_count = conn.hlen(cart_key)
+            keys = conn.hkeys(cart_key)
+
+            cart_count = 0
+        #当前用户总的商品数目
+
+            for x in keys:
+                x1 = int(conn.hget(cart_key,x))
+                cart_count += x1
 
         # 组织模板上下文
         #如果存在这个变量,就对这个变量进行更新!
