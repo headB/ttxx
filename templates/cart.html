@@ -51,6 +51,14 @@
 	
 	<script type="text/javascript" >
 
+		origin_val = 0
+
+		//当触发焦点的时候,就记录数值
+		$('.num_show').focus(function(){
+
+			origin_val = $(this).val()
+		})
+
 		//更新购物车中商品的数量
 
 		error_update = false
@@ -94,7 +102,7 @@
 
 		}
 
-
+		//这里是设置全选或者设置为不选全选的按钮
 		$(".cart_list_td").find(":checkbox").change(function(){
 
 			//首先获取所有商品的种类总数,注意,不是商品的总数量.
@@ -134,104 +142,113 @@
 			}
 
 	
-	//购物车增加记录显示
-	$('.add').click(function(){
+		//购物车增加记录显示
+		$('.add').click(function(){
 
 		this_objects = $(this)
 		count = $(this).next().val()
 		sku_id = $(this).next().attr("sku_id")
-		csrf = $('.settlements [name="csrfmiddlewaretoken"]').val()
-
 		error_update = false
-
 		count = parseInt(count) + 1
-		params = {'sku_id':sku_id,'count':count,'csrfmiddlewaretoken':csrf}
+		
 		//发起请求
+		update_remote_cart_info(sku_id,count)
 
-		$.post('/cart/update',params,function(data){
-			if (data.res == 5){
+		if (error_update == false){
+					object_1 = this_objects
+					object_1.next().val(count)
+					update_goods_amount(object_1.parents('ul'))
+					//收集所有checkbox为checked激活状态的信息
+					is_checked = object_1.parents('ul').find(":checkbox").prop("checked")
+					if (is_checked){
+					//更新页面信息,设置的是下面的统计
+					update_page_info()
+					}
+						//更新左上角,页面上面的购物车数量
+					$(".total_count").children("em").text(total)
+					}
 				
-				//注意了,这个位置一定需要加上设置error_update的值
-				
-				error_update = false
-				total = data.total_count
-				update_info(total)
-
-
-				}
-			else{
-				
-				error_update = true
-				alert(data.errmsg)
-			}
-		})
-			
-			
-		function update_info(total){
-			
-			object_1 = this_objects
-
-			object_1.next().val(count)
-			
-			update_goods_amount(object_1.parents('ul'))
-
-			is_checked = object_1.parents('ul').find(":checkbox").prop("checked")
-
-			if (is_checked){
-
-			update_page_info()
-
-			}
-
-			//更新页面上面的购物车数量
-			$(".total_count").children("em").text(total)
-		}
 
 	})
 
-//减少记录
+		//减少记录
 			$('.minus').click(function(){
 
 			this_objects = $(this)
 			count = $(this).prev().val()
 			sku_id = $(this).prev().attr("sku_id")
-
 			count = parseInt(count) - 1
 			if (count <= 0){
 				return 
 			}
-
 			//发起请求
-
 			//更新购物车的记录
-
 			update_remote_cart_info(sku_id,count)
-				
+
+
 				if (error_update == false){
-
 					object_1 = this_objects
-
 					object_1.prev().val(count)
-
 					update_goods_amount(object_1.parents('ul'))
-
 					//收集所有checkbox为checked激活状态的信息
 					is_checked = object_1.parents('ul').find(":checkbox").prop("checked")
-
 					if (is_checked){
-
 					//更新页面信息,设置的是下面的统计
 					update_page_info()
-
 					}
-
 						//更新左上角,页面上面的购物车数量
 					$(".total_count").children("em").text(total)
 					}
 
 			})
 
+		//手动更新商品数量
+		$('.num_show').blur(function(){
+
+			this_objects = $(this)
+			count = $(this).val()
+
+			//先记录用户之前的数值.例如是,加载的时候的数值,一个好的办法,就是,一点击的时候,focus是个好方法
+			if (isNaN(count) || count.trim().length == 0 || parseInt(count) <= 0){
+				$(this).val(origin_val)
+				return 
+			}
+
+			count = parseInt(count)
+			sku_id = $(this).attr("sku_id")
+			
+			if (count <= 0){
+				return 
+			}
+//发起请求
+//更新购物车的记录
+			update_remote_cart_info(sku_id,count)
+
+
+			if (error_update == false){
+				object_1 = this_objects
+				object_1.val(count)
+				update_goods_amount(object_1.parents('ul'))
+				//收集所有checkbox为checked激活状态的信息
+				is_checked = object_1.parents('ul').find(":checkbox").prop("checked")
+				if (is_checked){
+				//更新页面信息,设置的是下面的统计
+				update_page_info()
+				}
+					//更新左上角,页面上面的购物车数量
+				$(".total_count").children("em").text(total)
+				}
+				else{
+					$(this).val(origin_val)
+				return 
+				}
+
+		})
+
+
 		//获取当前的属性.
+
+		//监听除了全选按钮其他的所有checkbox按钮
 		$(".settlements li input").change(function(){
 		
 		
@@ -250,8 +267,12 @@
 
 	})
 
-	//监听除了全选按钮其他的所有checkbox按钮
 	
+		function input_content(input){
+
+
+
+		}
 
 	
 	
