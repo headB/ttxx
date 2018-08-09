@@ -1,4 +1,5 @@
 {% extends 'base_no_cart.html' %}
+{% load staticfiles %}
 	{%block title%}天天生鲜-购物车{%endblock title%}
 
 
@@ -24,20 +25,236 @@
 		<li class="col06">
 			<div class="num_add">
 				<a href="javascript:;" class="add fl">+</a>
-				<input type="text" class="num_show fl" value="{{ sku.count }}">	
+				<input sku_id="{{ sku.id }}" type="text" class="num_show fl" value="{{ sku.count }}">	
 				<a href="javascript:;" class="minus fl">-</a>	
 			</div>
 		</li>
-		<li class="col07"> {{ sku.amount }}元</li>
+		<li class="col07"> {{ sku.amount }}<span>元</span></li>
 		<li class="col08"><a href="javascript:;">删除</a></li>
 	</ul>
 	{% endfor %}
 
 	<ul class="settlements">
-		<li class="col01"><input type="checkbox" name="" checked=""></li>
+		{% csrf_token %}
+		<li class="col01"><input type="checkbox" name="" checked ></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em>{{ total_price }}</em><br>共计<b>{{ total_count }}</b>件商品</li>
 		<li class="col04"><a href="place_order.html">去结算</a></li>
 	</ul>
 
+
 {%endblock body%}
+
+{% block bottomfiles %}
+
+	<script src="{% static 'js/jquery-1.12.4.min.js' %}" ></script>
+	
+	<script type="text/javascript" >
+
+		//更新购物车中商品的数量
+
+		error_update = false
+		total = 0
+		function update_remote_cart_info(sku_id,count){
+
+
+			csrf = $('.settlements [name="csrfmiddlewaretoken"]').val()
+			params = {'sku_id':sku_id,'count':count,'csrfmiddlewaretoken':csrf}
+
+			//设置ajax同步设置
+			$.ajaxSettings.async = false
+			$.post('/cart/update',params,function(data){
+			if (data.res == 5){
+				
+				//注意了,这个位置一定需要加上设置error_update的值
+				error_update = false
+				total = data.total_count
+
+				
+				}
+			else{
+				
+						error_update = true
+						alert(data.errmsg)
+					}
+				})
+				$.ajaxSettings.async = true
+				}
+
+
+		//计算商品的小计
+		function update_goods_amount(sku_ul){
+			count = sku_ul.find('.num_show').val()
+			price = sku_ul.children('.col05').text()
+
+			amount = parseInt(count)*parseFloat(price) 
+
+			//设置商品小计
+			sku_ul.children('.col07').text(amount.toFixed(2)+'元')
+
+		}
+
+
+		$(".cart_list_td").find(":checkbox").change(function(){
+
+			//首先获取所有商品的种类总数,注意,不是商品的总数量.
+			all_len = $(".cart_list_td").length
+
+			checked_len = $(".cart_list_td").find(":checked").length
+			
+			if(checked_len != all_len ){
+				$(".settlements [checked]").prop('checked',false)
+			}else{
+				$(".settlements [type='checkbox']").prop('checked',true)
+			}
+
+			update_page_info()
+		})
+
+		//更新页面信息,设置的是下面的统计
+		function update_page_info(){
+
+			total_count = 0
+			total_price = 0
+			//这样做的目标
+			$('.cart_list_td').find(":checked").parents('ul').each(function(){
+				//获取商品的数目和小计
+				count = $(this).find(".num_show").val()
+				amount = $(this).find(".col07").text()
+
+				//进行累加
+				total_count += parseInt(count)
+				total_price += parseFloat(amount)
+
+			})
+
+			//设置被选中的商品的总件数和总价格
+			$(".settlements").find('em').text(total_price.toFixed(2))
+			$(".settlements").find('b').text(total_count)
+			}
+
+	
+	//购物车增加记录显示
+	$('.add').click(function(){
+
+		this_objects = $(this)
+		count = $(this).next().val()
+		sku_id = $(this).next().attr("sku_id")
+		csrf = $('.settlements [name="csrfmiddlewaretoken"]').val()
+
+		error_update = false
+
+		count = parseInt(count) + 1
+		params = {'sku_id':sku_id,'count':count,'csrfmiddlewaretoken':csrf}
+		//发起请求
+
+		$.post('/cart/update',params,function(data){
+			if (data.res == 5){
+				
+				//注意了,这个位置一定需要加上设置error_update的值
+				
+				error_update = false
+				total = data.total_count
+				update_info(total)
+
+
+				}
+			else{
+				
+				error_update = true
+				alert(data.errmsg)
+			}
+		})
+			
+			
+		function update_info(total){
+			
+			object_1 = this_objects
+
+			object_1.next().val(count)
+			
+			update_goods_amount(object_1.parents('ul'))
+
+			is_checked = object_1.parents('ul').find(":checkbox").prop("checked")
+
+			if (is_checked){
+
+			update_page_info()
+
+			}
+
+			//更新页面上面的购物车数量
+			$(".total_count").children("em").text(total)
+		}
+
+	})
+
+//减少记录
+			$('.minus').click(function(){
+
+			this_objects = $(this)
+			count = $(this).prev().val()
+			sku_id = $(this).prev().attr("sku_id")
+
+			count = parseInt(count) - 1
+			if (count <= 0){
+				return 
+			}
+
+			//发起请求
+
+			//更新购物车的记录
+
+			update_remote_cart_info(sku_id,count)
+				
+				if (error_update == false){
+
+					object_1 = this_objects
+
+					object_1.prev().val(count)
+
+					update_goods_amount(object_1.parents('ul'))
+
+					//收集所有checkbox为checked激活状态的信息
+					is_checked = object_1.parents('ul').find(":checkbox").prop("checked")
+
+					if (is_checked){
+
+					//更新页面信息,设置的是下面的统计
+					update_page_info()
+
+					}
+
+						//更新左上角,页面上面的购物车数量
+					$(".total_count").children("em").text(total)
+					}
+
+			})
+
+		//获取当前的属性.
+		$(".settlements li input").change(function(){
+		
+		
+		is_checked = $(this).prop("checked")
+		
+		
+		//遍历商品对应的checkbox,设置这些checkbox的选中状态和全选的checkbox保持一致
+		$('.cart_list_td').find(':checkbox').each(function(){
+				//这样就可以实现全选和全部选的功能了.!
+				$(this).prop('checked',is_checked)
+
+		})
+
+		//更新信息
+		update_page_info()
+
+	})
+
+	//监听除了全选按钮其他的所有checkbox按钮
+	
+
+	
+	
+	</script>
+
+{% endblock bottomfiles %}
