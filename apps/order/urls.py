@@ -1,8 +1,9 @@
 from django.urls import path,include,re_path
-from . import views as order_view
+from . import views 
 
 
-app_name = 'user'
+app_name = 'order'
 urlpatterns = [
-    path('',order_view.index,name='index'),
+    path('place',views.OrderPlaceView.as_view(),name='place'),
+    path('commit',views.OrderCommitView.as_view(),name='commit'),
 ]
