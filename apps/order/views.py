@@ -84,7 +84,7 @@ class OrderPlaceView(LoginRequiredMixin, View):
 
 class OrderCommitView(View):
     '''订单创建'''
-    #@transaction.atomic
+    @transaction.atomic
     def post(self, request):
         '''订单创建'''
         # 判断用户是否登录

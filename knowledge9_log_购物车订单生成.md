@@ -125,7 +125,7 @@
         2. 导入这个函数 from django.db import transaction
         3. 用 @transaction.atomic装饰需要使用事务的函数.
     3. 但是,一个处理view函数里面,应该是分有多个函数的,所以,看情况使用事物.
-        1. 可以设置保存点.
+        1. ## 可以设置保存点.但是,顶端的函数必须有atomic装饰.
             1. 调用 django.db.transaction里面的savepoint方法.
         2. 提交保存点
             1. savepoint_commit(sid)
