@@ -111,10 +111,11 @@ class OrderCommitView(View):
             addr = Address.objects.get(id=addr_id)
         except Address.DoesNotExist:
             # 地址不存在
+            pass
             return JsonResponse({'res':3, 'errmsg':'地址非法'})
 
         # todo: 创建订单核心业务
-
+        
         # 组织参数
         # 订单id: 20171122181630+用户id
         order_id = datetime.now().strftime('%Y%m%d%H%M%S')+str(user.id)
@@ -161,6 +162,7 @@ class OrderCommitView(View):
                 if int(count) > sku.stock:
                     transaction.savepoint_rollback(save_id)
                     return JsonResponse({'res':6,'errmsg':'商品库存不足'})
+
 
 
                 # todo: 向df_order_goods表中添加一条记录
