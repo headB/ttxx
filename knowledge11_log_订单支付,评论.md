@@ -31,6 +31,15 @@
         1. app_id
         2. method
         3. ......
+6. 首先安装python的一些插件.
+    1. pip install python-alipay-sdk --upgrade
+    2. 生成密钥文件
+        ```python
+            openssl
+            OpenSSL> genrsa -out app_private_key.pem   2048  # 私钥
+            OpenSSL> rsa -in app_private_key.pem -pubout -out app_public_key.pem # 导出公钥
+            OpenSSL> exit
+        ```
 
 
 # 支付流程图

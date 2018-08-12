@@ -11,6 +11,7 @@ from order.models import OrderInfo, OrderGoods
 from django_redis import get_redis_connection
 from utils.mixin import LoginRequiredMixin
 from datetime import datetime
+import time
 # Create your views here.
 
 
@@ -149,7 +150,9 @@ class OrderCommitView(View):
             for sku_id in sku_ids:
                 # 获取商品的信息
                 try:
-                    sku = GoodsSKU.objects.get(id=sku_id)
+                    sku = GoodsSKU.objects.select_for_update().get(id=sku_id)
+                    #print(sku.stock)
+                    #time.sleep(5)
                 except:
                     # 商品不存在
                     transaction.savepoint_rollback(save_id) 

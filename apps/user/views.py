@@ -270,7 +270,7 @@ class UserOrderView(LoginRequiredMixin,View):
 
         # 分页
 
-        paginator = Paginator(orders, 1)
+        paginator = Paginator(orders, 3)
 
         # 获取第page页的内容
         try:
