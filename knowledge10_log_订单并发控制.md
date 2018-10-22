@@ -87,3 +87,13 @@ SET AUTOCOMMIT=0; BEGIN WORK; SELECT quantity FROM products WHERE id=3 FOR UPDAT
 UPDATE products SET quantity = '1' WHERE id=3 ; COMMIT WORK;
 
 ```
+2. 测试结果
+    1. 首先是,图片结果,参考有道云,10月22日的记录,关于mysql测试的.
+    2. 测试结果说明
+        1. 前面设置了autocommit=0之后,然后,一旦某一个行数据被使用select XXX for update之后,
+        这一行数据就被锁定只能读取了,不能更新了,也不能删除.看起来需要等锁.!
+        2. 其他没有被指定特定锁定的行数据库,都可以正确读写.
+        3. 但是其实还有一个问题,就是我现在这个问题了,我必须让他锁定的时候,不能读取.
+        所以,准备有一种结果了.!读都锁定.!
+
+
