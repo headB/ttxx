@@ -97,7 +97,13 @@ UPDATE products SET quantity = '1' WHERE id=3 ; COMMIT WORK;
         它并没有提交最终的commit,所以,其他都是读取旧的数据了,嗯嗯,其他的人都出现了幻读了.
         3. 但是其实还有一个问题,就是我现在这个问题了,我必须让他锁定的时候,不能读取.
         所以,准备有一种结果了.!读都锁定.!
+        4. 具体的其他可以参考这里
+        https://www.cnblogs.com/houweijian/p/5869243.html
 
     3. 所以感觉上面的,并不是最好的方案,我看看最终锁住数据,不能读取的情况.!
+        1. 在mysql里面执行 lock tables `tableName` write,
+        然后其他用户就不能读取数据库表了,要的就是这种感觉.
+        2. 然后在mysql里面执行 lock tables `tableName` read,
+        然后大家就只能读取了,谁都不能更新或者插入新数据了.!
 
 
