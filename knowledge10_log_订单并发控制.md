@@ -74,4 +74,16 @@
                             #添加
                             transaction-isolation = READ-COMMITTED
                         ```
-            6. 
+
+#补充一种用于测试mysql事务的方法
+1. 代码部分
+```python
+
+#于是我们在MySQL 就可以这样测试，代码如下:
+
+SET AUTOCOMMIT=0; BEGIN WORK; SELECT quantity FROM products WHERE id=3 FOR UPDATE;
+#此时products 数据中id=3 的数据被锁住(注3)，其它事务必须等待此次事务 提交后才能执行
+#SELECT * FROM products WHERE id=3 FOR UPDATE 如此可以确保quantity 在别的事务读到的数字是正确的。
+UPDATE products SET quantity = '1' WHERE id=3 ; COMMIT WORK;
+
+```
